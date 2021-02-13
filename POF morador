@@ -1,0 +1,40 @@
+
+require(tidyverse)
+require(survey)
+require(magrittr)
+
+dir("~/Dados_20201125")
+dir("~/Documentacao_20201125")
+
+## morador
+
+dic <- readxl::read_xls("~/Documentacao_20201125/Dicionários de váriaveis.xls", sheet = 1)
+
+sizes <- readr::fwf_widths(
+  widths = na.omit(
+    parse_number(
+      str_trim(
+        unlist(dic[,2])
+        )
+      )
+    ),
+  col_names = na.omit(
+    str_trim(
+      unlist(dic[,4])
+      )
+    )[-1])
+
+morador <- readr::read_fwf("~/Dados_20201125/MORADOR.txt", col_positions = sizes) ## leitura
+
+morador %<>%
+  mutate(
+    control = str_c(COD_UPA, NUM_DOM, NUM_UC, COD_INFORMANTE)
+) ## id
+
+morador_srv <- svydesign(
+  id = ~control,
+  strata = ~ESTRATO_POF,
+  weights = ~PESO_FINAL,
+  data = morador,
+  nest = T
+) ## amostragem
