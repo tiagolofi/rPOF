@@ -38,3 +38,25 @@ morador_srv <- svydesign(
   data = morador,
   nest = T
 ) ## amostragem
+
+# despesa coletiva 
+
+dic <- readxl::read_xls("~/Documentacao_20201125/Dicionários de váriaveis.xls", sheet = 2)
+
+dic2 <- readxl::read_xls("~/Documentacao_20201125/Cadastro de Produtos.xls")
+
+sizes <- readr::fwf_widths(
+  widths = na.omit(
+    parse_number(
+      str_trim(
+        unlist(dic[,2])
+      )
+    )
+  ),
+  col_names = na.omit(
+    str_trim(
+      unlist(dic[,4])
+    )
+  )[-1])
+
+colet <- readr::read_fwf("~/Dados_20201125/DESPESA_COLETIVA.txt", col_positions = sizes) ## leit
